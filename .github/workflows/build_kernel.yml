@@ -59,6 +59,7 @@ jobs:
         fetch-depth: 1
   
     - name: Telegram msg
+      if: github.event.inputs.UPLOAD_TO_TG == 'true'
       uses: cbrgm/telegram-github-action@v1
       with:
         to: ${{ secrets.CHAT_ID }}
@@ -67,11 +68,11 @@ jobs:
         message: |
           @${{ github.actor }} triggered a kernel build!
 
-          Start: ${{ steps.rundate.outputs.REPO_DATE }}
-          Device: ${{ github.event.inputs.TARGET_DEVICE }}
-          Branch: ${{ github.event.inputs.BRANCH }}
-          Workflows: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          Repository: ${{ github.server_url }}/${{ github.repository }}
+          <b>Start:</b> ${{ steps.rundate.outputs.REPO_DATE }}
+          <b>Device:</b> ${{ github.event.inputs.TARGET_DEVICE }}
+          <b>Branch:</b> ${{ github.event.inputs.BRANCH }}
+          <b>Workflows:</b> ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          <b>Repository:</b> ${{ github.server_url }}/${{ github.repository }}
 
     - name: Prepare dependencies
       run: |
@@ -89,9 +90,9 @@ jobs:
           wget -q -O clang.tar.gz $URL
           tar -xf clang.tar.gz && rm clang.tar.gz && cd ..
         else
-          git clone --depth=1 https://github.com/rsuntk/toolchains.git -b clang-12 clang
+          git clone --depth=1 --single-branch https://github.com/rsuntk/toolchains.git -b clang-12 clang
         fi
-        git clone --depth=1 https://github.com/rsuntk/toolchains.git -b gcc-10 gcc-10
+        curl -LSs "https://raw.githubusercontent.com/rsuntk/toolchains/refs/heads/README/clone.sh" | bash -s gcc-10
       working-directory: kernel_root
       
     - name: Build kernel
