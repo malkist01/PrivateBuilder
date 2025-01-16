@@ -209,6 +209,7 @@ jobs:
       working-directory: kernel_root
         
     - name: Strip LKMs
+      continue-on-error: true
       run: |
         # Cleanup zip
         rm -rf *.zip
