@@ -6,6 +6,14 @@ on:
         description: Kernel branch
         default: 'hq-cmn-up-325'
         required: true
+      BUILD_TARGET:
+        description: 'Build target'
+        required: true
+        default: 'kernel'
+        type: choice
+        options:
+          - kernel
+          - defconfig
       TARGET_DEVICE:
         description: 'Target Device'
         required: true
@@ -15,7 +23,6 @@ on:
           - a03s
           - a04e
           - m04
-          - a06
       LTO:
         description: 'Link Time Optimisation'
         required: true
@@ -59,7 +66,7 @@ jobs:
         fetch-depth: 1
   
     - name: Telegram msg
-      if: github.event.inputs.UPLOAD_TO_TG == 'true'
+      if: github.event.inputs.UPLOAD_TO_TG == 'true' && github.event.inputs.BUILD_TARGET == 'kernel'
       uses: cbrgm/telegram-github-action@v1
       with:
         to: ${{ secrets.CHAT_ID }}
@@ -134,15 +141,15 @@ jobs:
           export DEVICE="M045F"
           export DEVICE_ID="M04"
           export TARGET_PRODUCT=a04
-        elif [[ "${{ github.event.inputs.TARGET_DEVICE }}" = "a06" ]]; then
-          export DEFCONFIG="rsuntk-a06_defconfig"
-          export DEVICE="A065F"
-          export DEVICE_ID="A06"
+        fi
+
+        BUILD_TARGET="${{ github.event.inputs.BUILD_TARGET }}"
+
+        if [[ "$BUILD_TARGET" != "defconfig" ]]; then
+          export KERNELSU="${{ github.event.inputs.KSU }}"
         fi
         
-        export KERNELSU="${{ github.event.inputs.KSU }}"
-        
-        bash $(pwd)/build.sh kernel --jobs $(nproc --all) `echo $DEFCONFIG`
+        bash $(pwd)/build.sh `echo $BUILD_TARGET` --jobs $(nproc --all) `echo $DEFCONFIG`
         
         if [[ "${{ github.event.inputs.KSU }}" = "true" ]]; then
         	KSU_REV_COUNT=$(cd KernelSU && git rev-list --count HEAD)
@@ -181,6 +188,7 @@ jobs:
         path: kernel_root/out/build_config.txt
         
     - name: Upload artifacts
+      if: github.event.inputs.BUILD_TARGET == 'kernel'
       uses: actions/upload-artifact@v4
       with:
         name: Build-${{ steps.buildKernel.outputs.buildDetails }}
@@ -189,6 +197,7 @@ jobs:
           kernel_root/out/arch/arm64/boot/dts/mediatek/*.dtb
 
     - name: Upload AnyKernel3
+      if: github.event.inputs.BUILD_TARGET == 'kernel'
       uses: actions/upload-artifact@v4
       with:
         name: AnyKernel3-${{ steps.buildKernel.outputs.buildDetails }}
@@ -196,7 +205,7 @@ jobs:
         compression-level: 9
         
     - name: Upload to Telegram
-      if: github.event.inputs.UPLOAD_TO_TG == 'true'
+      if: github.event.inputs.UPLOAD_TO_TG == 'true' && github.event.inputs.BUILD_TARGET == 'kernel'
       env:
         CHAT_ID: ${{ secrets.CHAT_ID }}
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
