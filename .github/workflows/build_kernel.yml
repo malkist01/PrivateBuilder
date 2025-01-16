@@ -4,7 +4,7 @@ on:
     inputs:
       BRANCH:
         description: Kernel branch
-        default: 'android-4.19-stable'
+        default: 'hq-cmn-up-325'
         required: true
       TARGET_DEVICE:
         description: 'Target Device'
