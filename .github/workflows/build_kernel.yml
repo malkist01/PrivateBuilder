@@ -150,35 +150,38 @@ jobs:
         fi
         
         bash $(pwd)/build.sh `echo $BUILD_TARGET` --jobs $(nproc --all) `echo $DEFCONFIG`
-        
-        if [[ "${{ github.event.inputs.KSU }}" = "true" ]]; then
-        	KSU_REV_COUNT=$(cd KernelSU && git rev-list --count HEAD)
-        	KSU_VERSION=$(expr 10200 + $KSU_REV_COUNT)
-        else
-        	KSU_VERSION="No KernelSU"
-        fi
-        echo "- KernelSU version: $KSU_VERSION"
-        
-        ## CREATE buildDetails.txt
-        printf "Localversion: `./getutsrel`
-        Clang version: `clang -v 2>&1 | grep ' version ' | sed 's/[[:space:]]*$//'`
-        Build: `echo $BUILD_START`
-        Defconfig: `echo $DEFCONFIG`
-        KernelSU: `echo $KSU_VERSION`
-        LTO: `echo $LTO`
-        SELinux: `echo $SELINUX_STATE`
-        " >> buildDetails.txt
-        
-        echo "TITLE=Galaxy `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
-        
-        echo ""
-        echo "===================================================="
-        strings out/arch/arm64/boot/Image | grep "Linux version"
-        echo "===================================================="
 
+        if [[ "$BUILD_TARGET" = "kernel" ]]; then
+          if [[ "${{ github.event.inputs.KSU }}" = "true" ]]; then
+          	KSU_REV_COUNT=$(cd KernelSU && git rev-list --count HEAD)
+          	KSU_VERSION=$(expr 10200 + $KSU_REV_COUNT)
+          else
+          	KSU_VERSION="No KernelSU"
+          fi
+          echo "- KernelSU version: $KSU_VERSION"
+          
+          ## CREATE buildDetails.txt
+          printf "Localversion: `./getutsrel`
+          Clang version: `clang -v 2>&1 | grep ' version ' | sed 's/[[:space:]]*$//'`
+          Build: `echo $BUILD_START`
+          Defconfig: `echo $DEFCONFIG`
+          KernelSU: `echo $KSU_VERSION`
+          LTO: `echo $LTO`
+          SELinux: `echo $SELINUX_STATE`
+          " >> buildDetails.txt
+          
+          echo "TITLE=Galaxy `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
+          
+          echo ""
+          echo "===================================================="
+          strings out/arch/arm64/boot/Image | grep "Linux version"
+          echo "===================================================="
+          
+          gitsha1=$(git rev-parse --short HEAD)
+          buildDetails="`make kernelversion`-`echo $DEVICE`_`echo $gitsha1`-`date +'%Y%m%d%H%M%S'`" && echo "buildDetails=$buildDetails" >> $GITHUB_OUTPUT
+        fi
+        
         mv out/.config out/build_config.txt
-        gitsha1=$(git rev-parse --short HEAD)
-        buildDetails="`make kernelversion`-`echo $DEVICE`_`echo $gitsha1`-`date +'%Y%m%d%H%M%S'`" && echo "buildDetails=$buildDetails" >> $GITHUB_OUTPUT
       working-directory: kernel_root
       
     - name: Upload config
