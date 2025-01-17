@@ -162,13 +162,12 @@ jobs:
           
           ## CREATE buildDetails.txt
           printf "Localversion: `./getutsrel`
-          Clang version: `clang -v 2>&1 | grep ' version ' | sed 's/[[:space:]]*$//'`
-          Build: `echo $BUILD_START`
-          Defconfig: `echo $DEFCONFIG`
-          KernelSU: `echo $KSU_VERSION`
-          LTO: `echo $LTO`
-          SELinux: `echo $SELINUX_STATE`
-          " >> buildDetails.txt
+        Clang version: `clang -v 2>&1 | grep ' version ' | sed 's/[[:space:]]*$//'`
+        Build: `echo $BUILD_START`
+        Defconfig: `echo $DEFCONFIG`
+        KernelSU: `echo $KSU_VERSION`
+        LTO: `echo $LTO`
+        SELinux: `echo $SELINUX_STATE`" >> buildDetails.txt
           
           echo "TITLE=Galaxy `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
           
