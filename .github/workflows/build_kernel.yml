@@ -176,11 +176,10 @@ jobs:
           echo "===================================================="
           strings out/arch/arm64/boot/Image | grep "Linux version"
           echo "===================================================="
-          
-          gitsha1=$(git rev-parse --short HEAD)
-          buildDetails="`make kernelversion`-`echo $DEVICE`_`echo $gitsha1`-`date +'%Y%m%d%H%M%S'`" && echo "buildDetails=$buildDetails" >> $GITHUB_OUTPUT
         fi
         
+        gitsha1=$(git rev-parse --short HEAD)
+        buildDetails="`make kernelversion`-`echo $DEVICE`_`echo $gitsha1`-`date +'%Y%m%d%H%M%S'`" && echo "buildDetails=$buildDetails" >> $GITHUB_OUTPUT
         mv out/.config out/build_config.txt
       working-directory: kernel_root
       
