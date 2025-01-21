@@ -23,6 +23,14 @@ on:
           - a03s
           - a04e
           - m04
+      TARGET_BINARY:
+        description: 'Target Binary'
+        required: true
+        default: 'u8_above'
+        type: choice
+        options:
+          - u8_above
+          - u8_below
       LTO:
         description: 'Link Time Optimisation'
         required: true
@@ -77,6 +85,7 @@ jobs:
           @${{ github.actor }} triggered a kernel build!
 
           <b>Start:</b> ${{ steps.rundate.outputs.REPO_DATE }}
+          <b>Target Binary:</b> ${{ github.event.inputs.TARGET_BINARY }}
           <b>Device:</b> ${{ github.event.inputs.TARGET_DEVICE }}
           <b>Branch:</b> ${{ github.event.inputs.BRANCH }}
           <b>Workflows:</b> ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
@@ -115,6 +124,17 @@ jobs:
         export SELINUX_STATE="Enforcing"
         export IS_CI=true
         export LTO="${{ github.event.inputs.LTO }}"
+        export BINARY_WORKAROUND="${{ github.event.inputs.TARGET_BINARY }}"
+
+        if [[ "$BINARY_WORKAROUND" = "u8_below" ]]; then
+          rm -rf drivers/gpu
+          echo "[+] Binary workaround!"
+          mv _extra/*.tar drivers
+          echo "[+] Extracting drivers ..."
+          cd drivers/ && tar -xf *.tar
+          echo "[-] Done!"
+          rm *.tar && cd ..
+        fi
 
         if [[ "${{ github.event.inputs.LLVM }}" = "true" ]]; then
           export LLVM=1
