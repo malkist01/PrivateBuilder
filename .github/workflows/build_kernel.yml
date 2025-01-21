@@ -4,7 +4,7 @@ on:
     inputs:
       BRANCH:
         description: Kernel branch
-        default: 'hq-cmn-up-325'
+        default: 'linux-4.19.y'
         required: true
       BUILD_TARGET:
         description: 'Build target'
