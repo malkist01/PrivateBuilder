@@ -134,6 +134,9 @@ jobs:
           cd drivers/ && tar -xf *.tar
           echo "[-] Done!"
           rm *.tar && cd ..
+          BIN_MSG="U8 Below"
+        else
+          BIN_MSG="U8 Above"
         fi
 
         if [[ "${{ github.event.inputs.LLVM }}" = "true" ]]; then
@@ -187,7 +190,8 @@ jobs:
         Defconfig: `echo $DEFCONFIG`
         KernelSU: `echo $KSU_VERSION`
         LTO: `echo $LTO`
-        SELinux: `echo $SELINUX_STATE`" >> buildDetails.txt
+        SELinux: `echo $SELINUX_STATE`
+        Target Binary: `echo $BIN_MSG`" >> buildDetails.txt
           
           echo "TITLE=Galaxy `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
           
