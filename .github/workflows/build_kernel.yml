@@ -55,6 +55,9 @@ on:
       LLVM_IAS:
         description: LLVM_IAS=1 (LLVM=1 needed!)
         type: boolean
+      SUSFS:
+        description: Enable SUSFS (branch must susfs !!)
+        type: boolean
         
 jobs:
   build:
@@ -125,6 +128,11 @@ jobs:
         export IS_CI=true
         export LTO="${{ github.event.inputs.LTO }}"
         export BINARY_WORKAROUND="${{ github.event.inputs.TARGET_BINARY }}"
+        export SUSFS="${{ github.event.inputs.SUSFS }}"
+        if [[ "$SUSFS" = "true" ]]; then
+          export DEFAULT_KSU_BRANCH="susfs-v1.5.5"
+          export SUSFS_VERSION="$(cat ./include/linux/susfs.h | grep -E '^#define SUSFS_VERSION' | cut -d' ' -f3 | sed 's/"//g')"
+        fi
 
         if [[ "$BINARY_WORKAROUND" = "u8_below" ]]; then
           rm -rf drivers/gpu
@@ -147,7 +155,7 @@ jobs:
         fi
 
         # clone mtk connectivity
-        rm -rf drivers/misc/mediatek/connectivity && cd drivers/misc/mediatek/ && git clone https://github.com/rsuntkOrgs/mtk_connectivity_module --depth=1 -b staging-4.19 connectivity && rm -rf connectivity/.git && cd ../../..
+        #rm -rf drivers/misc/mediatek/connectivity && cd drivers/misc/mediatek/ && git clone https://github.com/rsuntkOrgs/mtk_connectivity_module --depth=1 -b staging-4.19 connectivity && rm -rf connectivity/.git && cd ../../..
 
         if [[ "${{ github.event.inputs.TARGET_DEVICE }}" = "a03s" ]]; then
           export DEFCONFIG="rsuntk-a03s_defconfig"
@@ -191,6 +199,7 @@ jobs:
         KernelSU: `echo $KSU_VERSION`
         LTO: `echo $LTO`
         SELinux: `echo $SELINUX_STATE`
+        SusFS: `echo $SUSFS, echo $SUSFS_VERSION`
         Target Binary: `echo $BIN_MSG`" >> buildDetails.txt
           
           echo "TITLE=Galaxy `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
