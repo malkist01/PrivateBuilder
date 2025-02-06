@@ -40,20 +40,11 @@ on:
           - none
           - thin
           - full
-      CLANG_TWENTY:
-        description: Use clang 20
-        type: boolean
       KSU:
         description: Add KernelSU support
         type: boolean
       UPLOAD_TO_TG:
         description: Upload to Telegram
-        type: boolean
-      LLVM:
-        description: LLVM=1
-        type: boolean
-      LLVM_IAS:
-        description: LLVM_IAS=1 (LLVM=1 needed!)
         type: boolean
       SUSFS:
         description: Enable SUSFS (branch must susfs !!)
@@ -104,14 +95,10 @@ jobs:
       run: |
         mkdir toolchains
         cd toolchains
-        if [[ "${{ github.event.inputs.CLANG_TWENTY }}" = "true" ]]; then
-          mkdir clang && cd clang
-          URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r547379.tar.gz"
-          wget -q -O clang.tar.gz $URL
-          tar -xf clang.tar.gz && rm clang.tar.gz && cd ..
-        else
-          git clone --depth=1 --single-branch https://github.com/rsuntk/toolchains.git -b clang-12 clang
-        fi
+        mkdir clang && cd clang
+        URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r547379.tar.gz"
+        wget -q -O clang.tar.gz $URL
+        tar -xf clang.tar.gz && rm clang.tar.gz && cd ..
         curl -LSs "https://raw.githubusercontent.com/rsuntk/toolchains/refs/heads/README/clone.sh" | bash -s gcc-10
       working-directory: kernel_root
       
@@ -145,13 +132,6 @@ jobs:
           BIN_MSG="U8 Below"
         else
           BIN_MSG="U8 Above"
-        fi
-
-        if [[ "${{ github.event.inputs.LLVM }}" = "true" ]]; then
-          export LLVM=1
-          if [[ "${{ github.event.inputs.LLVM_IAS }}" = "true" ]]; then
-            export LLVM_IAS=1
-          fi
         fi
 
         # clone mtk connectivity
