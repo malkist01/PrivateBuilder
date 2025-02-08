@@ -179,7 +179,7 @@ jobs:
         KernelSU: `echo $KSU_VERSION`
         LTO: `echo $LTO`
         SELinux: `echo $SELINUX_STATE`
-        SusFS: `echo $SUSFS, echo $SUSFS_VERSION`
+        SusFS: $SUSFS, $SUSFS_VERSION
         Target Binary: `echo $BIN_MSG`" >> buildDetails.txt
           
           echo "TITLE=Galaxy `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
