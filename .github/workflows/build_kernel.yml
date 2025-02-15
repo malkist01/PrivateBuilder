@@ -61,9 +61,8 @@ jobs:
     - uses: actions/checkout@v4
       with:
         path: kernel_root
-        repository: rsuntk/android_kernel_samsung_huaqin-cmn
+        repository: rsuntk/kernel_samsung_huaqin
         ref: ${{ github.event.inputs.BRANCH }}
-        token: ${{ secrets.ACCESS_TOKEN }}
         show-progress: false
         fetch-depth: 1
   
