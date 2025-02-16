@@ -139,17 +139,17 @@ jobs:
         #rm -rf drivers/misc/mediatek/connectivity && cd drivers/misc/mediatek/ && git clone https://github.com/rsuntkOrgs/mtk_connectivity_module --depth=1 -b staging-4.19 connectivity && rm -rf connectivity/.git && cd ../../..
 
         if [[ "${{ github.event.inputs.TARGET_DEVICE }}" = "a03s" ]]; then
-          export DEFCONFIG="rsuntk-a03s_defconfig"
+          export DEFCONFIG="a03s_defconfig"
           export DEVICE="A037F"
           export DEVICE_ID="A03s"
           export TARGET_PRODUCT=a03s
         elif [[ "${{ github.event.inputs.TARGET_DEVICE }}" = "a04e" ]]; then
-          export DEFCONFIG="rsuntk-a04e_defconfig"
+          export DEFCONFIG="a04e_defconfig"
           export DEVICE="A042F"
           export DEVICE_ID="A04e"
           export TARGET_PRODUCT=a04
         elif [[ "${{ github.event.inputs.TARGET_DEVICE }}" = "m04" ]]; then
-          export DEFCONFIG="rsuntk-m04_defconfig"
+          export DEFCONFIG="m04_defconfig"
           export DEVICE="M045F"
           export DEVICE_ID="M04"
           export TARGET_PRODUCT=a04
