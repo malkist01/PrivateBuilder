@@ -4,7 +4,7 @@ on:
     inputs:
       BRANCH:
         description: Kernel branch
-        default: 'linux-4.19.y'
+        default: 'linux-4.9'
         required: true
       BUILD_TARGET:
         description: 'Build target'
@@ -17,20 +17,11 @@ on:
       TARGET_DEVICE:
         description: 'Target Device'
         required: true
-        default: 'a03s'
+        default: 'mido'
         type: choice
         options:
-          - a03s
-          - a04e
-          - m04
-      TARGET_BINARY:
-        description: 'Target Binary'
-        required: true
-        default: 'u8_above'
-        type: choice
-        options:
-          - u8_above
-          - u8_below
+          - j6prime
+          - santoni
       LTO:
         description: 'Link Time Optimisation'
         required: true
@@ -61,7 +52,7 @@ jobs:
     - uses: actions/checkout@v4
       with:
         path: kernel_root
-        repository: rsuntk/kernel_samsung_huaqin
+        repository: malkist01/Android-A15
         ref: ${{ github.event.inputs.BRANCH }}
         show-progress: false
         fetch-depth: 1
@@ -109,8 +100,8 @@ jobs:
         export CROSS_COMPILE=$(pwd)/toolchains/gcc-10/bin/aarch64-buildroot-linux-gnu-
         #export CROSS_COMPILE="aarch64-linux-gnu-"
         export CLANG_TRIPLE="aarch64-linux-gnu-"
-        export KBUILD_BUILD_USER="rsuntk"
-        export KBUILD_BUILD_HOST="rsuntkOrgs"
+        export KBUILD_BUILD_USER="malkist"
+        export KBUILD_BUILD_HOST="android"
         export BUILD_START=`date`
         export SELINUX_STATE="Enforcing"
         export IS_CI=true
@@ -139,20 +130,20 @@ jobs:
         #rm -rf drivers/misc/mediatek/connectivity && cd drivers/misc/mediatek/ && git clone https://github.com/rsuntkOrgs/mtk_connectivity_module --depth=1 -b staging-4.19 connectivity && rm -rf connectivity/.git && cd ../../..
 
         if [[ "${{ github.event.inputs.TARGET_DEVICE }}" = "a03s" ]]; then
-          export DEFCONFIG="rsuntk-a03s_defconfig"
-          export DEVICE="A037F"
-          export DEVICE_ID="A03s"
-          export TARGET_PRODUCT=a03s
+          export DEFCONFIG="teletubies_defconfig"
+          export DEVICE="mido"
+          export DEVICE_ID="mido"
+          export TARGET_PRODUCT=mido
         elif [[ "${{ github.event.inputs.TARGET_DEVICE }}" = "a04e" ]]; then
-          export DEFCONFIG="rsuntk-a04e_defconfig"
-          export DEVICE="A042F"
-          export DEVICE_ID="A04e"
-          export TARGET_PRODUCT=a04
+          export DEFCONFIG="teletubies_defconfig"
+          export DEVICE="santoni"
+          export DEVICE_ID="santoni"
+          export TARGET_PRODUCT=santoni
         elif [[ "${{ github.event.inputs.TARGET_DEVICE }}" = "m04" ]]; then
-          export DEFCONFIG="rsuntk-m04_defconfig"
-          export DEVICE="M045F"
-          export DEVICE_ID="M04"
-          export TARGET_PRODUCT=a04
+          export DEFCONFIG="teletubies_defconfig"
+          export DEVICE="j6prime"
+          export DEVICE_ID="j6prime"
+          export TARGET_PRODUCT=j6prime
         fi
 
         BUILD_TARGET="${{ github.event.inputs.BUILD_TARGET }}"
@@ -183,7 +174,7 @@ jobs:
         SusFS: $SUSFS, $SUSFS_VERSION
         Target Binary: `echo $BIN_MSG`" >> buildDetails.txt
           
-          echo "TITLE=Galaxy `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
+          echo "TITLE=Xiaomi `echo $DEVICE_ID` Kernel" >> $GITHUB_ENV
           
           echo ""
           echo "===================================================="
